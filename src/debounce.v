@@ -1,8 +1,5 @@
 
 /*
- * Autor:   Andrea García Borges
- * Fecha:   22/04/2026
- *
  * Módulo:  debounce
  *
  * Descripción: Filtro anti-rebote digital basado en contador. Solo propaga

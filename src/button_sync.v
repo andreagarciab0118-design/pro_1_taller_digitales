@@ -1,7 +1,5 @@
 
 /*
- * Autor:   Andrea García Borges
- * Fecha:   22/04/2026
  *
  * Módulo:  button_sync
  *

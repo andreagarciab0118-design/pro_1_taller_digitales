@@ -1,7 +1,4 @@
 /*
- * Autor:   Andrea García Borges
- * Fecha:   22/04/2026
- *
  * Módulo:  edge_detector
  *
  * Descripción: Detector de flanco de subida. Genera un pulso de exactamente
