@@ -1,0 +1,50 @@
+# Archivos generados por Vivado
+*.jou
+*.log
+*.str
+*.mif
+*.xpr
+*.bit
+*.bin
+*.ltx
+ 
+# Carpetas generadas por Vivado al sintetizar e implementar
+*.runs/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.gen/
+*.srcs/
+*.bd/
+*.vitis/
+ 
+# Archivos de proyecto Vivado (se regeneran con el .xpr)
+*.xpr.bak
+ 
+# Archivos de simulación
+*.vcd
+*.vvp
+*.fst
+ 
+# Archivos objeto de compilación Icarus/ModelSim
+*.o
+*.out
+sim_*
+ 
+# Archivos de ModelSim/QuestaSim
+work/
+transcript
+vsim.wlf
+*.wlf
+ 
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+ 
+# Carpeta de backups de Vivado
+.Xil/
+ 
