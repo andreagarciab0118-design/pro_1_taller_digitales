@@ -5,7 +5,7 @@
  * Módulo:  tb_font_rom
  *
  * Compilar:
- *   iverilog -g2012 -o tb_font_rom.vvp tb_font_rom.sv font_rom.v
+ *   iverilog -g2012 -o tb_font_rom.vvp tb/tb_font_rom.sv src/font_rom.v
  *
  * Ejecutar:
  *   vvp tb_font_rom.vvp
