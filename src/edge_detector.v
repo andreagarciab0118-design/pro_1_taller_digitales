@@ -1,25 +1,21 @@
-/*
- * Módulo:  edge_detector
- *
- * Descripción: Detector de flanco de subida. Genera un pulso de exactamente
- *              un ciclo de reloj cuando detecta una transición de 0 a 1 en
- *              signal_in. Es el último eslabón de la cadena de
- *              acondicionamiento de botones.
- *
- * Puertos:
- *   clk        Reloj del sistema
- *   rst        Reset síncrono activo alto
- *   signal_in  Señal limpia procedente del debounce
- *   pulse_out  Pulso de 1 ciclo en cada flanco de subida
- */
+//! @title edge_detector
+//! @author Andrea García Borges
+//! @date 23/04/2026
+//!
+//! Detector de flanco de subida. Genera un pulso de exactamente
+//! un ciclo de reloj cuando detecta una transición de 0 a 1 en
+//! signal_in. Es el último eslabón de la cadena de
+//! acondicionamiento de botones: button_sync → debounce → edge_detector.
+
 module edge_detector (
-    input  wire clk,
-    input  wire rst,
-    input  wire signal_in,
-    output reg  pulse_out
+    input  wire clk,        //! Reloj del sistema
+    input  wire rst,        //! Reset síncrono activo alto
+    input  wire signal_in,  //! Señal limpia procedente del debounce
+    output reg  pulse_out   //! Pulso de 1 ciclo en cada flanco de subida
 );
-    reg signal_d;
- 
+
+    reg signal_d; //! Versión retrasada un ciclo de signal_in
+
     always @(posedge clk) begin
         if (rst) begin
             signal_d  <= 1'b0;
@@ -29,5 +25,5 @@ module edge_detector (
             signal_d  <= signal_in;
         end
     end
- 
+
 endmodule

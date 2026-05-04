@@ -1,33 +1,24 @@
+//! @title debounce
+//! @author Andrea García Borges
+//! @date 23/04/2026
+//!
+//! Filtro anti-rebote digital basado en contador. Solo propaga
+//! el nuevo nivel cuando la señal permanece estable durante
+//! MAX_COUNT ciclos consecutivos. Si cambia antes, el contador
+//! se reinicia desde cero.
 
-/*
- * Módulo:  debounce
- *
- * Descripción: Filtro anti-rebote digital basado en contador. Solo propaga
- *              el nuevo nivel cuando la señal permanece estable durante
- *              MAX_COUNT ciclos consecutivos. Si cambia antes, el contador
- *              se reinicia desde cero.
- *
- * Parámetros:
- *   MAX_COUNT  Ciclos de estabilidad requeridos antes de aceptar el nivel.
- *              Para 100 MHz con 10 ms de filtrado usar 1_000_000.
- *
- * Puertos:
- *   clk       Reloj del sistema
- *   rst       Reset síncrono activo alto
- *   noisy_in  Señal ruidosa ya sincronizada por button_sync
- *   clean_out Señal filtrada y estable
- */
 module debounce #(
-    parameter MAX_COUNT = 1_000_000
+    parameter MAX_COUNT = 1_000_000 //! Ciclos de estabilidad requeridos. Para 100 MHz con 10 ms usar 1_000_000
 )(
-    input  wire clk,
-    input  wire rst,
-    input  wire noisy_in,
-    output reg  clean_out
+    input  wire clk,       //! Reloj del sistema
+    input  wire rst,       //! Reset síncrono activo alto
+    input  wire noisy_in,  //! Señal ruidosa ya sincronizada por button_sync
+    output reg  clean_out  //! Señal filtrada y estable
 );
-    reg [19:0] count;
-    reg        noisy_prev;
- 
+
+    reg [19:0] count;      //! Contador de ciclos estables
+    reg        noisy_prev; //! Valor anterior de la señal para detectar cambios
+
     always @(posedge clk) begin
         if (rst) begin
             count      <= 20'd0;
@@ -44,5 +35,5 @@ module debounce #(
             end
         end
     end
- 
+
 endmodule

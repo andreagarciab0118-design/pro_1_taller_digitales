@@ -1,65 +1,77 @@
-/*
- * Autor:   Andrea García Borges
- * Fecha:   23/04/2026
- *
- * Módulo:  top_sim
- *
- * Descripción: Versión del top para simulación con iverilog.
- *              Idéntico al top de síntesis, pero incluye al final un stub
- *              de clk_wiz_0 que pasa el reloj directamente (sin dividir)
- *              y activa locked de inmediato, reemplazando el IP de Vivado
- *              que no existe en iverilog.
- *
- *              NO usar este archivo para síntesis en Vivado.
- *              Para síntesis usar top.v con el IP real clk_wiz_0.
- *
- * Compilar:
-    iverilog -g2012 -o sim/tb_top.vvp \
-    tb/tb_top.sv \
-    src/top_sim.v \
-    src/background.v \
-    src/button_sync.v \
-    src/clock_counter.v \
-    src/debounce.v \
-    src/edge_detector.v \
-    src/font_rom.v \
-    src/h_sync_gen.v \
-    src/image_generator.v \
-    src/pixel_mux.v \
-    src/seg7_driver.v \
-    src/v_sync_gen.v \
-    src/vga_controller.v \
-    src/vram.v
- *
- * Ejecutar:
- *   vvp sim/tb_top.vvp
- */
+//! @title top_sim
+//! @author Andrea García Borges
+//! @date 23/04/2026
+//!
+//! Versión del módulo top para simulación con iverilog.
+//! Replica la estructura del top de síntesis, pero reemplaza
+//! el IP clk_wiz_0 por un stub que pasa el reloj directamente
+//! y activa la señal locked de inmediato.
+//!
+//! Este archivo es SOLO para simulación.
+//! Para síntesis en Vivado usar top.v con el IP real.
+//!
+//! Flujo general:
+//! - Genera tiempo (clock_counter)
+//! - Genera imagen (image_generator)
+//! - Almacena en VRAM
+//! - Controla VGA (vga_controller)
+//! - Muestra hora en 7 segmentos (seg7_driver)
+//!
+//! Compilar:
+//! iverilog -g2012 -o sim/tb_top.vvp \
+//! tb/tb_top.sv \
+//! src/top_sim.v \
+//! src/background.v \
+//! src/button_sync.v \
+//! src/clock_counter.v \
+//! src/debounce.v \
+//! src/edge_detector.v \
+//! src/font_rom.v \
+//! src/h_sync_gen.v \
+//! src/image_generator.v \
+//! src/pixel_mux.v \
+//! src/seg7_driver.v \
+//! src/v_sync_gen.v \
+//! src/vga_controller.v \
+//! src/vram.v
+//!
+//! Ejecutar:
+//! vvp sim/tb_top.vvp
+
 module top (
-    input  wire       clk,
-    input  wire       rst,
-    input  wire       sw_adjust,
-    input  wire       btn_inc_hour,
-    input  wire       btn_inc_min,
-    output wire [6:0] seg,
-    output wire [7:0] an,
-    output wire       dp,
-    output wire [3:0] vga_r,
-    output wire [3:0] vga_g,
-    output wire [3:0] vga_b,
-    output wire       hsync,
-    output wire       vsync
+    input  wire       clk,           //! Reloj principal del sistema (100 MHz)
+    input  wire       rst,           //! Reset síncrono activo alto
+    input  wire       sw_adjust,     //! Habilita modo ajuste de hora
+    input  wire       btn_inc_hour,  //! Incrementa hora manualmente
+    input  wire       btn_inc_min,   //! Incrementa minutos manualmente
+    output wire [6:0] seg,           //! Segmentos display 7 segmentos (activo bajo)
+    output wire [7:0] an,            //! Selección de display (activo bajo)
+    output wire       dp,            //! Punto decimal (activo bajo)
+    output wire [3:0] vga_r,         //! Canal rojo VGA (4 bits)
+    output wire [3:0] vga_g,         //! Canal verde VGA (4 bits)
+    output wire [3:0] vga_b,         //! Canal azul VGA (4 bits)
+    output wire       hsync,         //! Señal de sincronización horizontal VGA
+    output wire       vsync          //! Señal de sincronización vertical VGA
 );
+
+    //! Señales internas de tiempo
     wire [3:0]  hour;
     wire [5:0]  minute;
     wire [5:0]  second;
+
+    //! Señales de reloj
     wire        clk_25;
+
+    //! Interfaz de escritura VRAM
     wire        we_a;
     wire [18:0] addr_a;
     wire        data_a;
+
+    //! Interfaz de lectura VRAM
     wire [18:0] vram_addr;
     wire        vram_data;
  
-    // Stub de simulación: pasa el reloj directo y locked = 1
+    //! Stub de reloj: en simulación no se divide frecuencia
     clk_wiz_0 u_clk_wiz (
         .clk_in1 (clk),
         .clk_out1(clk_25),
@@ -67,6 +79,7 @@ module top (
         .locked  ()
     );
  
+    //! Generador de hora, minuto y segundo
     clock_counter #(
         .CLK_FREQ    (100_000_000),
         .DEBOUNCE_MAX(1_000_000)
@@ -81,6 +94,7 @@ module top (
         .second      (second)
     );
  
+    //! Generador de imagen basado en la hora actual
     image_generator u_img_gen (
         .clk   (clk),
         .rst   (rst),
@@ -92,6 +106,7 @@ module top (
         .data_a(data_a)
     );
  
+    //! Memoria de video (doble puerto)
     vram u_vram (
         .clk_a    (clk),
         .we_a     (we_a),
@@ -102,6 +117,7 @@ module top (
         .data_out_b(vram_data)
     );
  
+    //! Controlador VGA: genera sincronización y RGB
     vga_controller u_vga (
         .clk         (clk_25),
         .rst         (rst),
@@ -114,6 +130,7 @@ module top (
         .vga_b       (vga_b)
     );
  
+    //! Driver de displays de 7 segmentos
     seg7_driver u_seg7 (
         .clk   (clk),
         .rst   (rst),
@@ -127,16 +144,16 @@ module top (
  
 endmodule
  
-// =============================================================
-//  Stub clk_wiz_0 — SOLO PARA SIMULACIÓN
-//  Pasa clk_in1 directo a clk_out1 y activa locked = 1.
-//  En síntesis este módulo es reemplazado por el IP de Vivado.
-// =============================================================
+//! =============================================================
+//! Stub clk_wiz_0 — SOLO PARA SIMULACIÓN
+//! Pasa clk_in1 directamente a clk_out1 y fija locked en 1.
+//! En síntesis este módulo es reemplazado por el IP real.
+//! =============================================================
 module clk_wiz_0 (
-    input  wire clk_in1,
-    output wire clk_out1,
-    input  wire reset,
-    output wire locked
+    input  wire clk_in1,   //! Reloj de entrada
+    output wire clk_out1,  //! Reloj de salida (igual al de entrada)
+    input  wire reset,     //! Reset (no utilizado en stub)
+    output wire locked     //! Indica reloj estable (siempre 1 en simulación)
 );
     assign clk_out1 = clk_in1;
     assign locked   = 1'b1;
