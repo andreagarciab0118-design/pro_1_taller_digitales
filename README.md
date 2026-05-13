@@ -126,6 +126,45 @@ gtkwave tb_vga_debug.vcd
 
 ---
 
+## Consumo de recursos
+
+Datos obtenidos del reporte de utilización de Vivado tras síntesis e implementación sobre la Nexys A7 (`xc7a100tcsg324-1`).
+
+### Resumen por módulo
+
+| Módulo | Slice LUTs (63400) | Slice Regs (126800) | Slices (15850) | Block RAM Tile (135) | DSPs (240) | IOBs (210) |
+|--------|-------------------|---------------------|----------------|----------------------|------------|------------|
+| **top** (total) | 217 | 221 | 115 | 10.5 | 1 | 35 |
+| `u_clk` (`clock_counter`) | 101 | 100 | 51 | 0 | 0 | 0 |
+| `u_img_gen` (`image_generator`) | 46 | 63 | 29 | 0.5 | 0 | 0 |
+| `u_seg7` (`seg7_driver`) | 7 | 17 | 9 | 0 | 0 | 0 |
+| `u_vga` (`vga_controller`) | 55 | 33 | 28 | 0 | 1 | 0 |
+| `u_vram` (`vram`) | 13 | 8 | 9 | 10 | 0 | 0 |
+| `u_clk_wiz` (`clk_wiz_0`) | 0 | 0 | 0 | 0 | 0 | 2 |
+
+### Porcentaje de utilización global
+
+| Recurso | Usado | Disponible | Utilización |
+|---------|-------|-----------|-------------|
+| Slice LUTs | 217 | 63 400 | **0.34 %** |
+| Slice Registers | 221 | 126 800 | **0.17 %** |
+| Slices | 115 | 15 850 | **0.73 %** |
+| Block RAM Tile | 10.5 | 135 | **7.78 %** |
+| DSPs | 1 | 240 | **0.42 %** |
+| Bonded IOBs | 35 | 210 | **16.67 %** |
+| BUFGCTRL | 3 | 32 | **9.38 %** |
+| MMCME2_ADV | 1 | 6 | **16.67 %** |
+
+### Notas
+
+- El recurso más utilizado en proporción es la **Block RAM** (7.78 %), dominada por `u_vram` (10 BRAM18) que almacena el framebuffer de 307 200 bits.
+- El único **DSP48** consumido pertenece a `u_vga` (`vga_controller`), usado en el cálculo de la dirección de lectura de la VRAM.
+- El uso de **LUTs y registros es muy bajo** (< 1 %), lo que deja amplio margen para futuras expansiones (color, múltiples zonas de texto, animaciones).
+- El **MMCME2_ADV** corresponde al PLL instanciado por `clk_wiz_0` para generar el dominio de 25 MHz.
+- No se dispone del reporte de timing de Vivado para este proyecto; el **retraso crítico y la frecuencia máxima** deben extraerse del archivo `timing_summary_routed.rpt` generado tras la implementación (`Open Implemented Design → Reports → Timing Summary`).
+
+---
+
 ## Control de versiones
 
 El repositorio sigue la convención **GitFlow** con ramas `main`, `develop` y ramas `feature/*` por módulo. Los mensajes de commit siguen el estándar **Conventional Commits**:
@@ -163,6 +202,3 @@ En caso de uso, se adjuntan las conversaciones como evidencia. El funcionamiento
 https://claude.ai/share/9736caba-678b-459d-ae7d-2d6facc734a1
 
 https://claude.ai/chat/7aa21b04-1db5-4c56-a199-40e87b9d69c3
-
-
-
